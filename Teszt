@@ -1,0 +1,197 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.IO;
+namespace Fájl_beolvasás1
+{
+    internal class Program
+    {
+        struct adat
+        {
+            public string név;
+            public int pont;
+            public int nyert;
+            public int döntetlen;
+            public int vesztett;
+           
+        }
+        static string számolás(int nyert, int vesztett)
+        {
+            int szám = nyert - vesztett;
+            if(szám>0)
+            {
+                return "Plusszos";
+            }
+            else if (szám == 0)
+            {
+                return "Semleges";
+            }
+            else
+            {
+                return "Mínuszos";
+            }
+
+        }
+
+        static int pontszámolás(int nyert, int döntetlen)
+        {
+            int pontszam = (nyert * 3) + (döntetlen * 1);
+            return pontszam;
+        }
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Focis Feladat:      Ebben a gyakorlásban a La Liga állásokról lesz szó");
+            Console.WriteLine("Tanult dolgok: File beolvasás, fügvény, programozási tételek");
+
+            /*Feladatok:
+             * 1, fájl beolvasás - Olvassa be a file, és tárolja egy tömbbe. Használjon classt
+             * 2, Mennyi csapat van a txtben?
+             * 3, Kinek van a legtöbb pontja?
+             * 4, Kinek van a legkevesebb Nyeresége?
+             * 5, Kérjen be egy csapatot, addig kérje be a nevüket ameddig olyat nem ír be, amely már van a txtben
+             * 6, Csináljon egy fügvényt arra, hogy +os, vagy-os egy csapat? Akkor plusszos, ha többet nyert mint vesztett,
+                                                                           Akkor minuszos ha többet vesztett, mint nyert,
+                                                                           Akkor semleges ha ugyanannyit vesztett, mint nyert.
+            * 7, Tételezzük fel, hogy szezon vége van, irassuk ki az állást, pont helyett helyzezés szerint, hogy ki hol végzett*/
+
+            Console.WriteLine($"\t 1.Feladat");
+
+            if (File.Exists("foci.txt") ==true){
+                Console.WriteLine("Rendben, létezik ez a file, a program tovább halad");
+            }
+            else
+            {
+                Console.WriteLine("Nemtalálható ez a file, probléma akadt a txt elérésével");
+            }
+
+            //Adatok beolvasása//
+            StreamReader sr = new StreamReader("foci.txt");
+
+            //Adat tároló létrehozása
+            adat[] adatok = new adat[40];
+
+            //Beolvasás  
+            int index = 0;
+            while (sr.EndOfStream == false)
+            {
+                string sor = sr.ReadLine();
+                string[] darabok = sor.Split(';');
+                adat újadat = new adat();
+                újadat.név = darabok[0];
+                újadat.pont = Convert.ToInt32(darabok[1]);
+                újadat.nyert = Convert.ToInt32(darabok[2]);
+                újadat.döntetlen = Convert.ToInt32(darabok[3]);
+                újadat.vesztett = Convert.ToInt32(darabok[4]);
+                adatok[index] = újadat;
+                index++;  
+            }
+
+
+            Console.WriteLine("");
+
+            Console.WriteLine($"\t 1.Feladat beolvasás");
+            Console.WriteLine($"\t Szeretné megnézni a txt tartalmát?");
+
+            string válasz = Console.ReadLine();
+
+            if( válasz == "Igen")
+            {
+                Console.WriteLine("Csapat név  Pontok  Nyert  Döntetlen  Vesztett  ");
+                for (int i = 0; i < index; i++)
+                {
+                    Console.WriteLine(adatok[i].név + " " + adatok[i].pont + " " + adatok[i].nyert + "  " + adatok[i].döntetlen + "   " + adatok[i].vesztett);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Következő feladat    :");
+            }
+
+
+            Console.WriteLine($"\t 2.Feladat  Mennyi csapat van a txtben?" );
+            Console.WriteLine($"A txtben jelenleg{index}-db csapat van");
+
+
+            Console.WriteLine($"\t 3.Feladat Kinek van a legtöbb pontja?" );
+            int legtöbbpont = adatok[0].pont;
+            adat legtöbbpontoscsapat = adatok[0];
+
+            for (int i = 0;i < adatok.Length;i++)
+            {
+                if (adatok[i].pont > legtöbbpontoscsapat.pont)
+                {
+                    legtöbbpontoscsapat = adatok[i];
+                }
+            }
+            Console.WriteLine("A csapat amelynek a legtöbb pontja van, az a:"+legtöbbpontoscsapat.név+"  Akiknek "+legtöbbpontoscsapat.pont+"-Pontjuk van");
+
+
+            Console.WriteLine($"\t 4.Feladat Kinek van a legkevesebb Nyeresége?");
+            adat legkevesebbnyereség = adatok[0];
+            int legkevesebbnyereségszám = adatok[0].nyert;
+            for (int i = 0; i < adatok.Length; i++)
+            {
+                if (adatok[i].nyert < legkevesebbnyereségszám)
+                {
+                    legkevesebbnyereség = adatok[i];
+                }
+            }
+            Console.WriteLine("Jelenleg a "+ legkevesebbnyereség.név +"-csapatának van a legkevesebb nyeresége, amely szám szerint" +legkevesebbnyereségszám);
+
+            Console.WriteLine($"\t 5.Feladat Kérjen be egy csapatot, addig kérje be a nevüket ameddig olyat nem ír be, amely már van a txtben, és írja ki minden adatát ");
+
+            bool megtalálta = false;
+            adat csapat = adatok[0];
+            do
+            {
+
+                Console.WriteLine("Adjon meg egy csapatnevet");
+                string csapatnév = Console.ReadLine();
+                for (int i = 0; i < index; i++)
+                {
+                    if (csapatnév == adatok[i].név)
+                    {
+                        megtalálta=true;
+                        csapat = adatok[i];
+                    }
+                    else
+                    {
+
+                    }
+                }  
+            } while (!megtalálta);
+            {
+                Console.WriteLine("Létezik ilyen csapat!" );
+                Console.WriteLine("A válastott csapat adatai:"+csapat.név+" Pontjaik: "+csapat.pont);
+            }
+
+            Console.WriteLine($"\t 6.Feladat  Fügvény csinálás" );
+
+            for (int i = 0; i < index; i++)
+            {
+                string állapot = számolás(adatok[i].nyert, adatok[i].vesztett);
+                Console.WriteLine("Csapat név: " + adatok[i].név + " Mínuszos-e?: " + állapot);
+            }
+
+
+
+            Console.WriteLine($"\t 7.Feladat");
+
+
+            string elérésihely = ("végleges.txt");
+            int helyezés = 0;
+            using(StreamWriter writer = new StreamWriter(elérésihely))
+            {
+                for (int i = 0; i < index; i++)
+                {
+                    helyezés++;
+                    writer.WriteLine("Név:  " + adatok[i].név + " Helyezés:   " + helyezés+".");
+                }
+            }
+            Console.ReadKey();
+        }
+    }
+}
+
